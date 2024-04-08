@@ -11,8 +11,33 @@
     <div class="container">
       <button class="btn btn-primary mb-3" @click="mostrar = !mostrar">Alternar</button>
 
+      <div class="form-group">
+        <label>Animações</label>
+        <select class="form-control" v-model="animacaoSelecionada">
+          <option value="fade">Fade</option>
+          <option value="zoom">Zoom</option>
+          <option value="slide">Slide</option>
+        </select>
+      </div>
 
-      <transition 
+      <div class="form-group">
+        <label>Mensagens</label>
+        <select class="form-control" v-model="alertaAtual">
+          <option value="info">Info</option>
+          <option value="warning">Warning</option>
+          <option value="success">Success</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Components</label>
+        <select class="form-control" v-model="componentSelecionado">
+          <option value="AppHome">Home</option>
+          <option value="AppSobre">Sobre</option>
+        </select>
+      </div>
+      <!-- <transition 
+      appear
       @before-enter="beforeEnter"
       @enter="enter"
       @after-enter="afterEnter"
@@ -21,8 +46,33 @@
       @leave="leave"
       @after-leave="afterLeave"
       @leave-cancelled="leaveCancelled"
+      :css="false"
       >
         <div class="alert alert-primary" v-if="mostrar">Animações no VueJS</div>
+      </transition> -->
+
+      <!-- <transition 
+      appear
+      appear-class=""
+      appear-active-class="animate__animated animate__flipInY"
+      appear-to-class=""
+      @before-appear="beforeAppear"
+      @appear="appear"
+      @after-appear="afterAppear"
+      @appear-cancelled="appearCancelled"
+      enter-class=""
+      enter-active-class="animate__animated animate__bounceInLeft"
+      enter-to-class=""
+      leave-class=""
+      leave-active-class="animate__animated animate__bounceOutDown"
+      leave-to-class=""
+      >
+        <div class="alert alert-primary" v-if="mostrar">Animações no VueJS</div>
+      </transition> -->
+
+      <transition :name="animacaoSelecionada" mode="out-in">
+        <!-- <div :class="classesAlerta" :key="alertaAtual">Animações no VueJS</div> -->
+        <component :is="componentSelecionado"></component>
       </transition>
     </div>
 
@@ -30,15 +80,32 @@
 </template>
 
 <script>
+
 export default {
+  components: {
+    AppHome: () => import('./components/AppHome.vue'),
+    AppSobre: () => import('./components/AppSobre.vue')
+  },
   data () {
     return {
-      mostrar: true
+      mostrar: true,
+      animacaoSelecionada: 'fade',
+      alertaAtual: 'info',
+      componentSelecionado: 'AppHome'
+    }
+  },
+  computed: {
+    classesAlerta () {
+      return {
+        alert: true,
+        [`alert-${this.alertaAtual}`]: true
+      }
     }
   },
   methods: {
-    beforeEnter () {
+    beforeEnter (el) {
       console.log('beforeEnter')
+      el.style.opacity = 0
     },
     enter () {
       console.log('enter')
@@ -49,8 +116,11 @@ export default {
     enterCancelled () {
       console.log('enterCancelled')
     },
-    beforeLeave () {
+    beforeLeave (el) {
       console.log('beforeLeave')
+      el.style.transtionn = 'width 0.1s'
+      el.style.overflow = 'hidden'
+      el.style.whitespace = 'nowrap'
     },
     leave () {
       console.log('leave')
@@ -60,7 +130,19 @@ export default {
     },
     leaveCancelled () {
       console.log('leaveCancelled')
-    }
+    },
+    beforeAppear () {
+      console.log('beforeAppear')
+    },
+    appear () {
+      console.log('appear')
+    },
+    afterAppear () {
+      console.log('afterAppear')
+    },
+    appearCancelled () {
+      console.log('appearCancelled')
+    },
   }
 }
 </script>
